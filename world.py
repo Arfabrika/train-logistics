@@ -7,32 +7,41 @@ dw = DataWorker()
 
 class World:
     def __init__(self) -> None:
+        data = dw.loadJSON('inputData.json')
+
         # Time params
-        self.curtime = datetime.datetime(2021,11,1)
-        self.stoptime = datetime.datetime(2021,11,4, 3)#datetime.datetime(2021,12,1)
+        self.curtime = datetime.datetime.strptime(data['curtime'], "%d-%m-%y %H:%M:%S")
+        self.stoptime = datetime.datetime.strptime(data['stoptime'], "%d-%m-%y %H:%M:%S")
 
         # Train params
         # trains #0 - #2 R-P Small
         #        #3 - #4 R-P Big
         #        #5 - #6 Z-P
-        t0 = Train("Р-П М #1", 4000, 4000, 40, 2500, 1250, 1)
-        t1 = Train("Р-П М #2", 4000, 0,    40, 2500, 0, 0, -1)
-        t2 = Train("Р-П М #3", 4000, 4000, 400, 2500, 2500, 1, 1)
-        t3 = Train("Р-П Б #1", 6000, 0,    35, 2500, 0, 1)
-        t4 = Train("Р-П Б #2", 6000, 0,    35, 2500, 0, 1)
-        testtrain = Train("Тест", 20, 0, 100, 0, 80, -1)
-        #self.trains = [t0, t1, t2, t3, t4]#, testtrain]
-        self.trains = [t2]
-        # Load station params
-        R = Station('Радужный', 200, [], 6000, 150, 10)
-        #Z = Station(250, [], 5000, 50, 2)
+        self.trains = []
+        for tr in data['trains']:
+            curTr = Train(tr['name'], tr['maxCap'],
+                          tr['curCap'] if 'curCap' in tr else 0,
+                          tr['speed'] if 'speed' in tr else 0,
+                          tr['distation'] if 'distation' in tr else 0,
+                          tr['position'] if 'position' in tr else 0,
+                          tr['direction'] if 'direction' in tr else 0,
+                          tr['isgone'] if 'isgone' in tr else 0)
+            self.trains.append(curTr)
 
-        # Unload station params
-        P = UnloadStation('Полярный', [])
-        self.stations = [R, P]#, Z]
+        # Load station params
+        self.stations = []
+        for st in data['stations']:
+            if 'unloadSpeed' in st:
+                exitTrain = Train(st['exitTrain']['name'], st['exitTrain']['maxCap'])
+                curSt = UnloadStation(st['name'], st['loadSpeed'], st['trains'],
+                                      st['unloadSpeed'], st['maxOilCount'], st['curOilCount'],
+                                      exitTrain)
+            else:
+                curSt = Station(st['name'], st['loadSpeed'], st['trains'],
+                                st['curOilCount'], st['avgOil'], st['msdOil'])
+            self.stations.append(curSt)
 
     def worldStep(self):
-        #print(self.curtime)
         for tr in self.trains:
             if tr.isgone:
                 if tr.distation == 0 and tr not in self.stations[0].trains:
@@ -50,7 +59,7 @@ class World:
                     tr.reverse(2500)
                     self.stations[2].addTrain(tr)
 
-        # station actions      
+        # station actions
         for st in self.stations:
             st.step()
             data = st.getData()

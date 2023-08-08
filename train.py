@@ -1,6 +1,6 @@
 
 class Train:
-    def __init__(self, name, maxCap, curCap, speed, distation, 
+    def __init__(self, name, maxCap, curCap = 0, speed = 0, distation = 0, 
                  position = 0, direction = 1, isgone = 0) -> None:
         # world schema
         # R           P           Z

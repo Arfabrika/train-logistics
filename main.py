@@ -8,5 +8,5 @@ world = World()
 #     print(e)
 #     world.saveStats()
 while world.curtime < world.stoptime:
-        world.worldStep()
+         world.worldStep()
 world.saveStats()

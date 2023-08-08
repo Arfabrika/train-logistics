@@ -1,0 +1,38 @@
+{
+    "trains": [
+        {
+            "name": "Тест",
+            "maxCap": 200,
+            "curCap": 0,
+            "speed": 100,
+            "distation": 0,
+            "position": 80,
+            "direction": -1
+        }
+    ],
+    "stations": [
+        {
+            "name": "Радужный",
+            "trains": [],
+            "loadSpeed": 200,
+            "curOilCount": 6000,
+            "avgOil": 150,
+            "msdOil": 10
+        },
+        {
+            "name": "Полярный",
+            "trains": [],
+            "loadSpeed": 200,
+            "unloadSpeed": 300,
+            "curOilCount": 11000,
+            "maxOilCount": 15000,
+            "loadVals": [0, 0, 0],
+            "exitTrain" : {
+                "name": "Выходной",
+                "maxCap": 10000
+            }
+        }
+    ],
+    "curtime": "01-11-21 00:00:00",
+    "stoptime": "04-11-21 03:00:00"
+}

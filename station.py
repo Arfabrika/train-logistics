@@ -23,7 +23,7 @@ class Station:
             self.trains.pop(0)
 
         self.saveData()
-        self.curOilCount += self.curGeneratedOil        
+        self.curOilCount += self.curGeneratedOil
         if len(self.trains) != 0:
             self.loadTrain(self.trains[0])
 
@@ -57,16 +57,17 @@ class Station:
         return self.lastLoad
 
 class UnloadStation(Station):
-    def __init__(self, name, trains) -> None:   
+    def __init__(self, name, loadSpeed, trains, unloadSpeed, maxOilCount,
+                 curOilCount = 0, exitTrain = Train("Выходной", 10000)) -> None:
         self.trains = trains
         self.name = name
+        self.loadSpeed = loadSpeed
+        self.unloadSpeed = unloadSpeed
+        self.curOilCount = curOilCount
+        self.maxOilCount = maxOilCount
+        self.exitTrain = exitTrain
 
-        self.loadSpeed = 300
-        self.unloadSpeed = 200
-        self.curOilCount = 11000
-        self.maxOilCount = 15000
         self.loadVals = [0] * 3
-        self.exitTrain = Train("Выходной", 10000, 0, 0, 0)
         self.stats = []
 
     def unloadOne(self, tr):
@@ -81,10 +82,11 @@ class UnloadStation(Station):
             return tmp
 
     def saveData(self):
-        self.stats = [self.curOilCount] 
+         
         for i, tr in enumerate(self.trains):
             self.stats.append(tr.name)
-            val = self.loadVals[i] if len(self.loadVals) else 0
+            # error here
+            val = self.loadVals[i] if i < len(self.loadVals) else 0
             if val > 0:
                 self.stats.append('Погрузка: ' + str(val))
             elif val < 0:
@@ -103,6 +105,7 @@ class UnloadStation(Station):
 
     def step(self):
         # train departure
+        self.stats = [self.curOilCount]
         for tr in self.trains:
             ind = self.trains.index(tr)
             if tr.name == "Выходной" and tr.curCap == tr.maxCap:
@@ -112,7 +115,7 @@ class UnloadStation(Station):
                 self.loadVals.pop(ind)
                 self.trains.remove(tr)
 
-        self.saveData()
+        
         # is oil train needed
         if self.isExitTrainNeeded():
             self.trains.append(self.exitTrain)
@@ -126,3 +129,4 @@ class UnloadStation(Station):
                 self.loadVals[i] = -self.loadTrain(curTrain)
             else:
                 self.loadVals[i] = self.unloadOne(curTrain)
+        self.saveData()
