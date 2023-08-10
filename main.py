@@ -8,5 +8,7 @@ world = World()
 #     print(e)
 #     world.saveStats()
 while world.curtime < world.stoptime:
+        #  if world.curtime.strftime('%d-%m-%y %H:%M:%S') == '02-11-21 02:00:00':
+        #     pass
          world.worldStep()
 world.saveStats()

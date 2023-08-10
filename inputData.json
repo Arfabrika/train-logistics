@@ -1,13 +1,49 @@
 {
     "trains": [
         {
-            "name": "Тест",
-            "maxCap": 200,
+            "name": "Р-П М #1",
+            "maxCap": 4000,
+            "curCap": 4000,
+            "speed": 40,
+            "position": 1250,
+            "direction": 1,
+            "routeId": 0
+        },
+        {
+            "name": "Р-П М #2",
+            "maxCap": 4000,
             "curCap": 0,
-            "speed": 100,
-            "distation": 0,
-            "position": 80,
-            "direction": -1
+            "speed": 40,
+            "position": 2500,
+            "direction": -1,
+            "routeId": 0
+        },
+        {
+            "name": "Р-П М #3",
+            "maxCap": 4000,
+            "curCap": 4000,
+            "speed": 40,
+            "position": 2500,
+            "direction": 1,
+            "routeId": 0
+        },
+        {
+            "name": "Р-П Б #1",
+            "maxCap": 6000,
+            "curCap": 0,
+            "speed": 35,
+            "position": 0,
+            "direction": -1,
+            "routeId": 0
+        },
+        {
+            "name": "Р-П Б #2",
+            "maxCap": 6000,
+            "curCap": 0,
+            "speed": 35,
+            "position": 0,
+            "direction": -1,
+            "routeId": 0
         }
     ],
     "stations": [
@@ -22,9 +58,9 @@
         {
             "name": "Полярный",
             "trains": [],
-            "loadSpeed": 200,
-            "unloadSpeed": 300,
-            "curOilCount": 11000,
+            "loadSpeed": 300,
+            "unloadSpeed": 200,
+            "curOilCount": 0,
             "maxOilCount": 15000,
             "loadVals": [0, 0, 0],
             "exitTrain" : {
@@ -33,6 +69,16 @@
             }
         }
     ],
+    "routes": [
+        {
+            "id": 0,
+            "stations": [
+                "Радужный",
+                "Полярный"
+            ],
+            "tracks": [2500]
+        }
+    ],
     "curtime": "01-11-21 00:00:00",
-    "stoptime": "04-11-21 03:00:00"
+    "stoptime": "01-12-21 00:00:00"
 }

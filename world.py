@@ -2,6 +2,8 @@ import datetime
 from station import Station, UnloadStation
 from train import Train
 from dataworker import DataWorker
+from route import Route
+import copy
 
 dw = DataWorker()
 
@@ -13,19 +15,30 @@ class World:
         self.curtime = datetime.datetime.strptime(data['curtime'], "%d-%m-%y %H:%M:%S")
         self.stoptime = datetime.datetime.strptime(data['stoptime'], "%d-%m-%y %H:%M:%S")
 
+        # route params
+        routesArr = []
+        for route in data['routes']:
+            routesArr.append(Route(route['id'], route['stations'], route['tracks']))
+
         # Train params
         # trains #0 - #2 R-P Small
         #        #3 - #4 R-P Big
         #        #5 - #6 Z-P
         self.trains = []
         for tr in data['trains']:
-            curTr = Train(tr['name'], tr['maxCap'],
+            routeId = tr['routeId']
+            curRoute = None
+            for route in routesArr:
+                if route.id == routeId:
+                    curRoute = copy.deepcopy(route)
+                    break
+            curRoute.setDistation(tr['direction'] if 'direction' in tr else 1)
+            curTr = Train(tr['name'], tr['maxCap'], curRoute,
                           tr['curCap'] if 'curCap' in tr else 0,
                           tr['speed'] if 'speed' in tr else 0,
-                          tr['distation'] if 'distation' in tr else 0,
                           tr['position'] if 'position' in tr else 0,
-                          tr['direction'] if 'direction' in tr else 0,
-                          tr['isgone'] if 'isgone' in tr else 0)
+                          #tr['isgone'] if 'isgone' in tr else 0,
+                          tr['direction'] if 'direction' in tr else 1)
             self.trains.append(curTr)
 
         # Load station params
@@ -41,23 +54,23 @@ class World:
                                 st['curOilCount'], st['avgOil'], st['msdOil'])
             self.stations.append(curSt)
 
+        for tr in self.trains:
+            tr.checkStop()
+
     def worldStep(self):
+        #print(self.curtime)
+
         for tr in self.trains:
             if tr.isgone:
-                if tr.distation == 0 and tr not in self.stations[0].trains:
-                    tr.reverse(2500)
-                    self.stations[0].addTrain(tr)
-
-                #not tested
-                elif tr.distation == 2500 and tr not in self.stations[1].trains:
-                    if tr.direction == 1:
-                        tr.reverse(0)
-                    else:
-                        tr.reverse(6500)
-                    self.stations[1].addTrain(tr)
-                elif tr.distation == 6500 and tr not in self.stations[2].trains:
-                    tr.reverse(2500)
-                    self.stations[2].addTrain(tr)
+                tr.isgone = 0
+                stname = tr.route.getTargetStation(tr.direction)
+                ind = None
+                for i, st in enumerate(self.stations):
+                    if st.name == stname:
+                        ind = i
+                        break
+                tr.reverse()
+                self.stations[ind].addTrain(tr)
 
         # station actions
         for st in self.stations:
@@ -68,6 +81,16 @@ class World:
             print(data)
 
         # train steps
+        self.moveTrains()
+
+        for tr in self.trains:
+            print(" ".join([tr.name, str(tr.curCap), str(tr.position)]))
+        self.curtime += datetime.timedelta(hours=1)
+
+    def saveStats(self):
+        dw.saveInExcel()
+
+    def moveTrains(self):
         for tr in self.trains:
             flag = 1
             for st in self.stations:
@@ -76,10 +99,3 @@ class World:
                   break
             if flag:
                 tr.move()
-
-        for tr in self.trains:
-            print(" ".join([tr.name, str(tr.curCap), str(tr.position)]))
-        self.curtime += datetime.timedelta(hours=1)
-
-    def saveStats(self):
-        dw.saveInExcel()

@@ -17,7 +17,7 @@ class Station:
     def generateOil(self):
         return int(np.random.normal(self.avgOil, self.msdOil, 1)[0])
 
-    def step(self):   
+    def step(self):
         self.curGeneratedOil = self.generateOil()
         if (len(self.trains) > 0 and self.trains[0].maxCap == self.trains[0].curCap):
             self.trains.pop(0)
@@ -80,19 +80,27 @@ class UnloadStation(Station):
             tmp = tr.curCap
             tr.curCap = 0
             return tmp
+    
+    def getUnloadValue(self, tr):
+        if tr.curCap >= self.unloadSpeed:
+            return self.unloadSpeed
+        return tr.curCap
 
-    def saveData(self):
-         
+    def saveData(self, limit):
         for i, tr in enumerate(self.trains):
+            if i == limit:
+                break
             self.stats.append(tr.name)
-            # error here
             val = self.loadVals[i] if i < len(self.loadVals) else 0
-            if val > 0:
+            if val is None:
+                self.stats.append('Ожидание')
+            elif val > 0:
                 self.stats.append('Погрузка: ' + str(val))
             elif val < 0:
                 self.stats.append('Отгрузка: ' + str(-val))
-            else:
+            elif val == 0:
                 self.stats.append('null')
+
         self.stats.append(self.name)
 
     def isExitTrainNeeded(self):
@@ -110,23 +118,39 @@ class UnloadStation(Station):
             ind = self.trains.index(tr)
             if tr.name == "Выходной" and tr.curCap == tr.maxCap:
                 self.loadVals.pop(ind)
+                tr.curCap = 0
                 self.trains.remove(tr)
-            elif tr.curCap == 0:
+            elif tr.name != "Выходной" and tr.curCap == 0:
                 self.loadVals.pop(ind)
+                #tr.reverse()
                 self.trains.remove(tr)
 
-        
         # is oil train needed
+        limit = min(3, len(self.trains))
         if self.isExitTrainNeeded():
-            self.trains.append(self.exitTrain)
+            if limit < 3:
+                self.trains.append(self.exitTrain)
+            else:
+                self.trains.insert(0, self.exitTrain)
 
         # train loading/unloading
-        limit = min(3, len(self.trains))
         self.loadVals = [0] * limit
         for i in range(limit):
             curTrain = self.trains[i]
             if curTrain.name == "Выходной":
                 self.loadVals[i] = -self.loadTrain(curTrain)
             else:
-                self.loadVals[i] = self.unloadOne(curTrain)
-        self.saveData()
+                if not self.isFull(self.getUnloadValue(tr)):
+                    self.loadVals[i] = self.unloadOne(curTrain)
+                else:
+                    self.loadVals[i] = None
+        self.saveData(limit)
+
+    def isFull(self, futureVal):
+        sum = 0
+        for val in self.loadVals:
+            if val is not None and val > 0:
+                sum += val
+        if sum + self.curOilCount + futureVal >= self.maxOilCount:
+            return True
+        return False

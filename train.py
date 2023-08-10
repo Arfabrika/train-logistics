@@ -1,7 +1,8 @@
+from route import Route
 
 class Train:
-    def __init__(self, name, maxCap, curCap = 0, speed = 0, distation = 0, 
-                 position = 0, direction = 1, isgone = 0) -> None:
+    def __init__(self, name, maxCap, route = Route(-1, [], []), curCap = 0, speed = 0, 
+                 position = 0, direction = 1) -> None:
         # world schema
         # R           P           Z
         # |-----------|-----------|
@@ -13,19 +14,27 @@ class Train:
         self.curCap = curCap
         self.speed = speed
         self.position = position
+        self.isgone = 0 #isgone
+        self.route = route
         self.direction = direction
-        self.distation = distation
-        self.isgone = isgone
 
-# edit move function
-    def move(self):
-        if abs(self.distation - self.position) <= self.speed:#if self.position + self.speed * self.direction >= self.distation:
-            self.position = self.distation
+    def checkStop(self):
+        res = self.route.checkPosition(self.position, self.speed, self.direction)
+        if res == 1:
+            self.position = self.route.distation
             self.isgone = 1
-        else:
+            return True
+        elif res == -1:
+            self.position = 0
+            self.isgone = 1
+            return True
+        return False
+
+    def move(self):
+        if not self.checkStop():
             self.position += self.speed * self.direction
 
-    def reverse(self, newDist):
-        self.isgone = 0
+    def reverse(self):
+        #self.isgone = 0
         self.direction *= -1
-        self.distation = newDist
+        self.route.setDistation(self.direction)
