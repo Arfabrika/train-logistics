@@ -50,13 +50,18 @@ class Station:
                 self.curOilCount -= self.loadSpeed
                 self.lastLoad = self.loadSpeed
             else:
-                self.loadSpeed = train.maxCap - train.curCap
-                train.curCap += self.loadSpeed
-                self.curOilCount -= self.loadSpeed
+                self.lastLoad = train.maxCap - train.curCap
+                train.curCap += self.lastLoad
+                self.curOilCount -= self.lastLoad
         else:
-            train.curCap += self.curOilCount
-            self.lastLoad = self.curOilCount
-            self.curOilCount = 0
+            if train.curCap + self.curOilCount <= train.maxCap:
+                train.curCap += self.curOilCount
+                self.lastLoad = self.curOilCount
+                self.curOilCount = 0
+            else:
+                self.lastLoad = train.maxCap - train.curCap
+                train.curCap += self.lastLoad
+                self.curOilCount -= self.lastLoad
         return self.lastLoad
 
 class UnloadStation(Station):
