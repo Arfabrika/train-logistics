@@ -46,11 +46,13 @@ class World:
         for st in data['stations']:
             if 'unloadSpeed' in st:
                 exitTrain = Train(st['exitTrain']['name'], st['exitTrain']['maxCap'])
-                curSt = UnloadStation(st['name'], st['loadSpeed'], st['trains'],
+                curSt = UnloadStation(st['name'], st['loadSpeed'], 
+                                      st['trains'] if 'trains' in st else [],
                                       st['unloadSpeed'], st['maxOilCount'], st['curOilCount'],
                                       exitTrain)
             else:
-                curSt = Station(st['name'], st['loadSpeed'], st['trains'],
+                curSt = Station(st['name'], st['loadSpeed'], 
+                                st['trains'] if 'trains' in st else [],
                                 st['curOilCount'], st['avgOil'], st['msdOil'])
             self.stations.append(curSt)
 

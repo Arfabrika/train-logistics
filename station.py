@@ -19,6 +19,9 @@ class Station:
 
     def step(self):
         self.curGeneratedOil = self.generateOil()
+        if len(self.trains) > 1:
+            for i in range(1, len(self.trains)):
+                self.trains[i].waitingCnt += 1
         if (len(self.trains) > 0 and self.trains[0].maxCap == self.trains[0].curCap):
             self.trains.pop(0)
 
@@ -122,11 +125,13 @@ class UnloadStation(Station):
                 self.trains.remove(tr)
             elif tr.name != "Выходной" and tr.curCap == 0:
                 self.loadVals.pop(ind)
-                #tr.reverse()
                 self.trains.remove(tr)
 
         # is oil train needed
         limit = min(3, len(self.trains))
+        if limit > 3:
+            for i in range(3, len(self.trains)):
+                self.trains[i].waitingCnt += 1
         if self.isExitTrainNeeded():
             if limit < 3:
                 self.trains.append(self.exitTrain)
@@ -144,6 +149,7 @@ class UnloadStation(Station):
                     self.loadVals[i] = self.unloadOne(curTrain)
                 else:
                     self.loadVals[i] = None
+                    curTrain.waitingCnt += 1
         self.saveData(limit)
 
     def isFull(self, futureVal):

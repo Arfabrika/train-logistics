@@ -14,9 +14,11 @@ class Train:
         self.curCap = curCap
         self.speed = speed
         self.position = position
-        self.isgone = 0 #isgone
         self.route = route
         self.direction = direction
+
+        self.isgone = 0
+        self.waitingCnt = 0
 
     def checkStop(self):
         res = self.route.checkPosition(self.position, self.speed, self.direction)
@@ -35,6 +37,5 @@ class Train:
             self.position += self.speed * self.direction
 
     def reverse(self):
-        #self.isgone = 0
         self.direction *= -1
         self.route.setDistation(self.direction)

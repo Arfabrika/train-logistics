@@ -44,12 +44,29 @@
             "position": 0,
             "direction": -1,
             "routeId": 0
+        },
+        {
+            "name": "З-П #1",
+            "maxCap": 5000,
+            "curCap": 0,
+            "speed": 45,
+            "position": 0,
+            "direction": -1,
+            "routeId": 1
+        },
+        {
+            "name": "З-П #2",
+            "maxCap": 5000,
+            "curCap": 0,
+            "speed": 45,
+            "position": 0,
+            "direction": -1,
+            "routeId": 1
         }
     ],
     "stations": [
         {
             "name": "Радужный",
-            "trains": [],
             "loadSpeed": 200,
             "curOilCount": 6000,
             "avgOil": 150,
@@ -57,7 +74,6 @@
         },
         {
             "name": "Полярный",
-            "trains": [],
             "loadSpeed": 300,
             "unloadSpeed": 200,
             "curOilCount": 0,
@@ -67,6 +83,14 @@
                 "name": "Выходной",
                 "maxCap": 10000
             }
+        },
+        {
+            "name": "Звезда",
+            "trains": [],
+            "loadSpeed": 250,
+            "curOilCount": 5000,
+            "avgOil": 50,
+            "msdOil": 2
         }
     ],
     "routes": [
@@ -77,6 +101,14 @@
                 "Полярный"
             ],
             "tracks": [2500]
+        },
+        {
+            "id": 1,
+            "stations": [
+                "Звезда",
+                "Полярный"
+            ],
+            "tracks": [4000]
         }
     ],
     "curtime": "01-11-21 00:00:00",
