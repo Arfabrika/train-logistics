@@ -1,5 +1,6 @@
 import datetime
-from station import Station, UnloadStation
+from station import Station
+from unloadStation import UnloadStation
 from train import Train
 from dataworker import DataWorker
 from route import Route
@@ -18,61 +19,60 @@ class World:
         # route params
         routesArr = []
         for route in data['routes']:
-            routesArr.append(Route(route['id'], route['stations'], route['tracks']))
+            routesArr.append(Route(route))
 
         # Train params
         # trains #0 - #2 R-P Small
         #        #3 - #4 R-P Big
         #        #5 - #6 Z-P
         self.trains = []
-        for tr in data['trains']:
-            routeId = tr['routeId']
+        exitTrainInd = None
+        for i, tr in enumerate(data['trains']):
             curRoute = None
-            for route in routesArr:
-                if route.id == routeId:
-                    curRoute = copy.deepcopy(route)
-                    break
-            curRoute.setDistation(tr['direction'] if 'direction' in tr else 1)
-            curTr = Train(tr['name'], tr['maxCap'], curRoute,
-                          tr['curCap'] if 'curCap' in tr else 0,
-                          tr['speed'] if 'speed' in tr else 0,
-                          tr['position'] if 'position' in tr else 0,
-                          #tr['isgone'] if 'isgone' in tr else 0,
-                          tr['direction'] if 'direction' in tr else 1)
+            if tr['name'] == "Выходной":
+                exitTrainInd = i
+            else:
+                routeId = tr['routeId']
+                for route in routesArr:
+                    if route.id == routeId:
+                        curRoute = copy.deepcopy(route)
+                        break
+                curRoute.setDistation()
+            curTr = Train(tr, curRoute)
             self.trains.append(curTr)
 
         # Load station params
         self.stations = []
         for st in data['stations']:
             if 'unloadSpeed' in st:
-                exitTrain = Train(st['exitTrain']['name'], st['exitTrain']['maxCap'])
-                curSt = UnloadStation(st['name'], st['loadSpeed'], 
-                                      st['trains'] if 'trains' in st else [],
-                                      st['unloadSpeed'], st['maxOilCount'], st['curOilCount'],
-                                      exitTrain)
+                curSt = UnloadStation(st, self.trains[exitTrainInd])
             else:
-                curSt = Station(st['name'], st['loadSpeed'], 
-                                st['trains'] if 'trains' in st else [],
-                                st['curOilCount'], st['avgOil'], st['msdOil'])
+                curSt = Station(st)
             self.stations.append(curSt)
+        self.trains.pop(exitTrainInd)
 
         for tr in self.trains:
-            tr.checkStop()
+            if tr.route.tracks[0].fromst != tr.lastStation:
+                tr.route.tracks[0].swap()
+            if tr.position == 0:
+                for st in self.stations:
+                    if st.name == tr.route.tracks[0].fromst:
+                        st.trains.append(tr)
+                        break
 
     def worldStep(self):
         #print(self.curtime)
-
         for tr in self.trains:
-            if tr.isgone:
-                tr.isgone = 0
-                stname = tr.route.getTargetStation(tr.direction)
-                ind = None
-                for i, st in enumerate(self.stations):
-                    if st.name == stname:
-                        ind = i
-                        break
-                tr.reverse()
-                self.stations[ind].addTrain(tr)
+            if tr.position >= tr.route.tracks[0].length:
+                tr.arrive()
+                stname = tr.route.getTargetStation()
+                if tr.lastStation == stname:
+                    ind = None
+                    for i, st in enumerate(self.stations):
+                        if st.name == stname:
+                            ind = i
+                            break
+                    self.stations[ind].addTrain(tr)
 
         # station actions
         for st in self.stations:
@@ -86,7 +86,7 @@ class World:
         self.moveTrains()
 
         for tr in self.trains:
-            print(" ".join([tr.name, str(tr.curCap), str(tr.position)]))
+            print(" ".join([tr.name, str(tr.curCap), str(tr.position), tr.lastStation]))
         self.curtime += datetime.timedelta(hours=1)
 
     def saveStats(self):

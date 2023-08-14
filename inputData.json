@@ -1,22 +1,27 @@
 {
     "trains": [
+        
+        {
+            "name": "Выходной",
+            "maxCap": 10000
+        },
         {
             "name": "Р-П М #1",
             "maxCap": 4000,
             "curCap": 4000,
             "speed": 40,
             "position": 1250,
-            "direction": 1,
-            "routeId": 0
+            "routeId": 0,
+            "lastStation":"Радужный"
         },
         {
             "name": "Р-П М #2",
             "maxCap": 4000,
             "curCap": 0,
             "speed": 40,
-            "position": 2500,
-            "direction": -1,
-            "routeId": 0
+            "position": 0,
+            "routeId": 0,
+            "lastStation":"Полярный"
         },
         {
             "name": "Р-П М #3",
@@ -24,8 +29,8 @@
             "curCap": 4000,
             "speed": 40,
             "position": 2500,
-            "direction": 1,
-            "routeId": 0
+            "routeId": 0,
+            "lastStation":"Радужный"
         },
         {
             "name": "Р-П Б #1",
@@ -33,8 +38,8 @@
             "curCap": 0,
             "speed": 35,
             "position": 0,
-            "direction": -1,
-            "routeId": 0
+            "routeId": 0,
+            "lastStation":"Радужный"
         },
         {
             "name": "Р-П Б #2",
@@ -42,8 +47,8 @@
             "curCap": 0,
             "speed": 35,
             "position": 0,
-            "direction": -1,
-            "routeId": 0
+            "routeId": 0,
+            "lastStation":"Радужный"
         },
         {
             "name": "З-П #1",
@@ -51,8 +56,8 @@
             "curCap": 0,
             "speed": 45,
             "position": 0,
-            "direction": -1,
-            "routeId": 1
+            "routeId": 1,
+            "lastStation":"Звезда"
         },
         {
             "name": "З-П #2",
@@ -60,8 +65,8 @@
             "curCap": 0,
             "speed": 45,
             "position": 0,
-            "direction": -1,
-            "routeId": 1
+            "routeId": 1,
+            "lastStation":"Звезда"
         }
     ],
     "stations": [
@@ -69,46 +74,44 @@
             "name": "Радужный",
             "loadSpeed": 200,
             "curOilCount": 6000,
-            "avgOil": 150,
-            "msdOil": 10
+            "production": {
+                "avgOil": 150,
+                "msdOil": 10
+            }
         },
         {
             "name": "Полярный",
             "loadSpeed": 300,
             "unloadSpeed": 200,
             "curOilCount": 0,
-            "maxOilCount": 15000,
-            "loadVals": [0, 0, 0],
-            "exitTrain" : {
-                "name": "Выходной",
-                "maxCap": 10000
-            }
+            "maxOilCount": 15000
         },
         {
             "name": "Звезда",
-            "trains": [],
             "loadSpeed": 250,
             "curOilCount": 5000,
-            "avgOil": 50,
-            "msdOil": 2
+            "production": {
+                "avgOil": 50,
+                "msdOil": 2
+            }
         }
     ],
     "routes": [
         {
             "id": 0,
-            "stations": [
-                "Радужный",
-                "Полярный"
-            ],
-            "tracks": [2500]
+            "tracks": [{
+                "from": "Радужный",
+                "to": "Полярный",
+                "length": 2500
+            }]
         },
         {
             "id": 1,
-            "stations": [
-                "Звезда",
-                "Полярный"
-            ],
-            "tracks": [4000]
+            "tracks": [{
+                "from": "Звезда",
+                "to": "Полярный",
+                "length": 4000
+            }]
         }
     ],
     "curtime": "01-11-21 00:00:00",
