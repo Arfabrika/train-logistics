@@ -10,6 +10,7 @@ dw = DataWorker()
 
 class World:
     def __init__(self) -> None:
+        #dw.saveToPostgres()
         data = dw.loadJSON('inputData.json')
 
         # Time params
@@ -80,17 +81,18 @@ class World:
             data = st.getData()
             data.insert(0, self.curtime.strftime('%d-%m-%y %H:%M:%S'))
             dw.saveOneRow(data[-1], data)
-            print(data)
+            #print(data)
 
         # train steps
         self.moveTrains()
 
-        for tr in self.trains:
-            print(" ".join([tr.name, str(tr.curCap), str(tr.position), tr.lastStation]))
+        # for tr in self.trains:
+        #     print(" ".join([tr.name, str(tr.curCap), str(tr.position), tr.lastStation]))
         self.curtime += datetime.timedelta(hours=1)
 
     def saveStats(self):
         dw.saveInExcel()
+        dw.saveToPostgres()
 
     def moveTrains(self):
         for tr in self.trains:
