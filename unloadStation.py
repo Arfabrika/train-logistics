@@ -2,13 +2,13 @@ from station import Station
 
 class UnloadStation(Station):
     def __init__(self, st, exitTrain) -> None:
-        
         self.name = st['name']
         self.loadSpeed = st['loadSpeed']
         self.unloadSpeed = st['unloadSpeed']
         self.curOilCount = st['curOilCount']
         self.maxOilCount = st['maxOilCount']
         self.exitTrain = exitTrain
+        self.isRouteChanging = st['isRouteChanging']
 
         self.loadVals = [0] * 3
         self.stats = []
@@ -55,7 +55,8 @@ class UnloadStation(Station):
             return True
         return False
 
-    def step(self):
+    def step(self, date):
+        self.changeRoute(date)
         # train departure
         self.stats = [self.curOilCount]
         for tr in self.trains:

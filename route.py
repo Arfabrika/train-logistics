@@ -17,24 +17,20 @@ class Route:
             self.tracks.append(Track(track))
         self.distation = 0
 
-    """
-    1 - train arrive to final station (position = distantion)
-    -1 - train arrive to start station (postion = 0)
-    0 - train between stations 
-    """
     def checkPosition(self, position, speed):
         if self.distation - position <= speed:
             return 1
         return 0
-    
-    def sumTracks(self):
-        sum = 0
-        for track in self.tracks:
-            sum += track.length
-        return sum
-    
+
     def setDistation(self):
-            self.distation = self.sumTracks()
+        self.distation = 0
+        for track in self.tracks:
+            self.distation += track.length
 
     def getTargetStation(self):
             return self.tracks[0].fromst
+
+class DateRoute:
+     def __init__(self, date, route) -> None:
+          self.date = date
+          self.route = route

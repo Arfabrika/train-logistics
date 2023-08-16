@@ -3,7 +3,7 @@ from station import Station
 from unloadStation import UnloadStation
 from train import Train
 from dataworker import DataWorker
-from route import Route
+from route import Route, DateRoute
 import copy
 
 dw = DataWorker()
@@ -20,7 +20,7 @@ class World:
         # route params
         routesArr = []
         for route in data['routes']:
-            routesArr.append(Route(route))
+            routesArr.append(copy.deepcopy(Route(route)))
 
         # Train params
         # trains #0 - #2 R-P Small
@@ -29,17 +29,19 @@ class World:
         self.trains = []
         exitTrainInd = None
         for i, tr in enumerate(data['trains']):
-            curRoute = None
+            routeList = []
             if tr['name'] == "Выходной":
                 exitTrainInd = i
             else:
-                routeId = tr['routeId']
-                for route in routesArr:
-                    if route.id == routeId:
-                        curRoute = copy.deepcopy(route)
-                        break
-                curRoute.setDistation()
-            curTr = Train(tr, curRoute)
+                for routeDate in tr['routes']:
+                    routeId = routeDate['routeId']
+                    for route in routesArr:
+                        if route.id == routeId:
+                            curRoute = copy.deepcopy(route)
+                            break
+                    curRoute.setDistation()
+                    routeList.append(copy.deepcopy(DateRoute(routeDate['startDate'], curRoute)))
+            curTr = Train(tr, routeList)
             self.trains.append(curTr)
 
         # Load station params
@@ -53,20 +55,20 @@ class World:
         self.trains.pop(exitTrainInd)
 
         for tr in self.trains:
-            if tr.route.tracks[0].fromst != tr.lastStation:
-                tr.route.tracks[0].swap()
+            if tr.routes[tr.curRoute].route.tracks[0].fromst != tr.lastStation:
+                tr.routes[tr.curRoute].route.tracks[0].swap()
             if tr.position == 0:
                 for st in self.stations:
-                    if st.name == tr.route.tracks[0].fromst:
+                    if st.name == tr.routes[tr.curRoute].route.tracks[0].fromst:
                         st.trains.append(tr)
                         break
 
     def worldStep(self):
-        #print(self.curtime)
+        # print(self.curtime)
         for tr in self.trains:
-            if tr.position >= tr.route.tracks[0].length:
+            if tr.position >= tr.routes[tr.curRoute].route.tracks[0].length:
                 tr.arrive()
-                stname = tr.route.getTargetStation()
+                stname = tr.routes[tr.curRoute].route.getTargetStation()
                 if tr.lastStation == stname:
                     ind = None
                     for i, st in enumerate(self.stations):
@@ -77,7 +79,7 @@ class World:
 
         # station actions
         for st in self.stations:
-            st.step()
+            st.step(self.curtime)
             data = st.getData()
             data.insert(0, self.curtime.strftime('%d-%m-%y %H:%M:%S'))
             dw.saveOneRow(data[-1], data)
@@ -92,7 +94,7 @@ class World:
 
     def saveStats(self):
         dw.saveInExcel()
-        dw.saveToPostgres()
+        # dw.saveToPostgres()
 
     def moveTrains(self):
         for tr in self.trains:

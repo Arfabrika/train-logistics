@@ -9,6 +9,7 @@ class Station:
         self.curOilCount = st['curOilCount']
         self.avgOil = st['production']['avgOil']
         self.msdOil = st['production']['msdOil']
+        self.isRouteChanging = st['isRouteChanging']
 
         self.curGeneratedOil = 0
         self.lastLoad = self.loadSpeed
@@ -18,7 +19,8 @@ class Station:
     def generateOil(self):
         return int(np.random.normal(self.avgOil, self.msdOil, 1)[0])
 
-    def step(self):
+    def step(self, date):
+        self.changeRoute(date)
         self.curGeneratedOil = self.generateOil()
         if len(self.trains) > 1:
             for i in range(1, len(self.trains)):
@@ -64,3 +66,15 @@ class Station:
                 train.curCap += self.lastLoad
                 self.curOilCount -= self.lastLoad
         return self.lastLoad
+
+    def changeRoute(self, date):
+        if self.isRouteChanging:
+            for tr in self.trains:
+                strtime = date.strftime('%d-%m-%y %H:%M:%S')
+                for i, rd in enumerate(tr.routes):
+                    if rd.date <= strtime and i != tr.curRoute and tr.curCap == 0:
+                        tr.routes[tr.curRoute].date = '31-12-9999 23:59:59'
+                        tr.curRoute = i
+                        if tr.lastStation != tr.routes[tr.curRoute].route.tracks[0].fromst:
+                            tr.routes[tr.curRoute].route.tracks[0].swap()
+                        # print(f"{tr.name} changed route to {tr.curRoute} in {date.strftime('%d-%m-%y %H:%M:%S')}")

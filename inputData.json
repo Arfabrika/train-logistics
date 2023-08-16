@@ -11,7 +11,16 @@
             "curCap": 4000,
             "speed": 40,
             "position": 1250,
-            "routeId": 0,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 0
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 1
+                }
+            ],
             "lastStation":"Радужный"
         },
         {
@@ -20,7 +29,16 @@
             "curCap": 0,
             "speed": 40,
             "position": 0,
-            "routeId": 0,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 0
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 1
+                }
+            ],
             "lastStation":"Полярный"
         },
         {
@@ -29,7 +47,16 @@
             "curCap": 4000,
             "speed": 40,
             "position": 2500,
-            "routeId": 0,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 0
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 1
+                }
+            ],
             "lastStation":"Радужный"
         },
         {
@@ -38,7 +65,16 @@
             "curCap": 0,
             "speed": 35,
             "position": 0,
-            "routeId": 0,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 0
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 1
+                }
+            ],
             "lastStation":"Радужный"
         },
         {
@@ -47,7 +83,16 @@
             "curCap": 0,
             "speed": 35,
             "position": 0,
-            "routeId": 0,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 0
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 1
+                }
+            ],
             "lastStation":"Радужный"
         },
         {
@@ -56,7 +101,16 @@
             "curCap": 0,
             "speed": 45,
             "position": 0,
-            "routeId": 1,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 1
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 0
+                }
+            ],
             "lastStation":"Звезда"
         },
         {
@@ -65,7 +119,16 @@
             "curCap": 0,
             "speed": 45,
             "position": 0,
-            "routeId": 1,
+            "routes": [
+                {
+                    "startDate": "01-11-21 00:00:00",
+                    "routeId": 1
+                },
+                {
+                    "startDate": "15-11-21 00:00:00",
+                    "routeId": 0
+                }
+            ],
             "lastStation":"Звезда"
         }
     ],
@@ -77,14 +140,16 @@
             "production": {
                 "avgOil": 150,
                 "msdOil": 10
-            }
+            },
+            "isRouteChanging": 0
         },
         {
             "name": "Полярный",
             "loadSpeed": 300,
             "unloadSpeed": 200,
             "curOilCount": 0,
-            "maxOilCount": 15000
+            "maxOilCount": 15000,
+            "isRouteChanging": 1
         },
         {
             "name": "Звезда",
@@ -93,7 +158,8 @@
             "production": {
                 "avgOil": 50,
                 "msdOil": 2
-            }
+            },
+            "isRouteChanging": 0
         }
     ],
     "routes": [
