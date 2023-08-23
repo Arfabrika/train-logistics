@@ -56,7 +56,7 @@ class UnloadStation(Station):
         return False
 
     def step(self, date):
-        self.changeRoute(date)
+        #self.changeRoute(date)
         # train departure
         self.stats = [self.curOilCount]
         for tr in self.trains:

@@ -10,7 +10,6 @@ dw = DataWorker()
 
 class World:
     def __init__(self) -> None:
-        #dw.saveToPostgres()
         data = dw.loadJSON('inputData.json')
 
         # Time params
@@ -52,21 +51,23 @@ class World:
             else:
                 curSt = Station(st)
             self.stations.append(curSt)
-        self.trains.pop(exitTrainInd)
+        self.trains.pop(exitTrainInd) 
 
         for tr in self.trains:
-            if tr.routes[tr.curRoute].route.tracks[0].fromst != tr.lastStation:
-                tr.routes[tr.curRoute].route.tracks[0].swap()
+            curTrack = tr.routes[tr.curRoute].route.curTrack
+            tr.routes[tr.curRoute].route.setRoute(tr.lastStation)
             if tr.position == 0:
                 for st in self.stations:
-                    if st.name == tr.routes[tr.curRoute].route.tracks[0].fromst:
+                    if st.name == tr.routes[tr.curRoute].route.tracks[curTrack].fromst:
                         st.trains.append(tr)
                         break
 
     def worldStep(self):
-        # print(self.curtime)
+        #print(self.curtime)
         for tr in self.trains:
-            if tr.position >= tr.routes[tr.curRoute].route.tracks[0].length:
+            if (tr.position >= tr.routes[tr.curRoute].route.tracks[-1].length and 
+                tr.routes[tr.curRoute].route.isLastTrack()):
+                tr.position = 0
                 tr.arrive()
                 stname = tr.routes[tr.curRoute].route.getTargetStation()
                 if tr.lastStation == stname:
@@ -75,7 +76,12 @@ class World:
                         if st.name == stname:
                             ind = i
                             break
-                    self.stations[ind].addTrain(tr)
+                    if ind is not None:
+                        self.stations[ind].addTrain(tr)
+                        tr.routes[tr.curRoute].route.curTrack = 0
+                        tr.routes[tr.curRoute].route.tracks.reverse()
+                        for track in tr.routes[tr.curRoute].route.tracks:
+                            track.swap()
 
         # station actions
         for st in self.stations:
@@ -89,12 +95,12 @@ class World:
         self.moveTrains()
 
         # for tr in self.trains:
-        #     print(" ".join([tr.name, str(tr.curCap), str(tr.position), tr.lastStation]))
+        #     print(" ".join([tr.name, str(tr.curCap), str(tr.position), tr.lastStation, str(tr.routes[tr.curRoute].route.curTrack)]))
         self.curtime += datetime.timedelta(hours=1)
 
     def saveStats(self):
         dw.saveInExcel()
-        # dw.saveToPostgres()
+        #dw.saveToPostgres()
 
     def moveTrains(self):
         for tr in self.trains:

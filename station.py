@@ -1,5 +1,4 @@
 import numpy as np
-from train import Train
 
 class Station:
     def __init__(self, st) -> None:
@@ -20,7 +19,7 @@ class Station:
         return int(np.random.normal(self.avgOil, self.msdOil, 1)[0])
 
     def step(self, date):
-        self.changeRoute(date)
+        #self.changeRoute(date)
         self.curGeneratedOil = self.generateOil()
         if len(self.trains) > 1:
             for i in range(1, len(self.trains)):
@@ -75,6 +74,7 @@ class Station:
                     if rd.date <= strtime and i != tr.curRoute and tr.curCap == 0:
                         tr.routes[tr.curRoute].date = '31-12-9999 23:59:59'
                         tr.curRoute = i
-                        if tr.lastStation != tr.routes[tr.curRoute].route.tracks[0].fromst:
-                            tr.routes[tr.curRoute].route.tracks[0].swap()
-                        # print(f"{tr.name} changed route to {tr.curRoute} in {date.strftime('%d-%m-%y %H:%M:%S')}")
+                        curTrack = tr.routes[tr.curRoute].route.curTrack
+                        if tr.lastStation != tr.routes[tr.curRoute].route.tracks[curTrack].fromst:
+                            tr.routes[tr.curRoute].route.tracks[curTrack].swap()
+                        #print(f"{tr.name} changed route in {date.strftime('%d-%m-%y %H:%M:%S')}")

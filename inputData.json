@@ -10,7 +10,7 @@
             "maxCap": 4000,
             "curCap": 4000,
             "speed": 40,
-            "position": 1250,
+            "position": 250,
             "routes": [
                 {
                     "startDate": "01-11-21 00:00:00",
@@ -21,7 +21,7 @@
                     "routeId": 1
                 }
             ],
-            "lastStation":"Радужный"
+            "lastStation":"О1"
         },
         {
             "name": "Р-П М #2",
@@ -46,7 +46,7 @@
             "maxCap": 4000,
             "curCap": 4000,
             "speed": 40,
-            "position": 2500,
+            "position": 0,
             "routes": [
                 {
                     "startDate": "01-11-21 00:00:00",
@@ -57,7 +57,7 @@
                     "routeId": 1
                 }
             ],
-            "lastStation":"Радужный"
+            "lastStation":"Полярный"
         },
         {
             "name": "Р-П Б #1",
@@ -167,17 +167,27 @@
             "id": 0,
             "tracks": [{
                 "from": "Радужный",
+                "to": "О1",
+                "length": 1000,
+                "trackCnt": 2
+            },
+            {
+                "from": "О1",
                 "to": "Полярный",
-                "length": 2500
-            }]
+                "length": 1500,
+                "trackCnt": 1
+            }],
+            "curTrack": 0
         },
         {
             "id": 1,
             "tracks": [{
                 "from": "Звезда",
                 "to": "Полярный",
-                "length": 4000
-            }]
+                "length": 4000,
+                "trackCnt": 2
+            }],
+            "curTrack": 0
         }
     ],
     "curtime": "01-11-21 00:00:00",
