@@ -4,7 +4,7 @@ class Track:
         self.tost = track['to']
         self.length = track['length']
         self.trackCnt = track['trackCnt'] if 'trackCnt' in track else 2
-        self.direction = None if self.trackCnt == 1 else 0
+        self.direction = None if self.trackCnt == 1 else 'None'
 
     def swap(self):
          tmp = self.tost
@@ -26,7 +26,7 @@ class Route:
                 return 1
             return 0
         return -1
-    
+
     def isLastTrack(self):
         if self.curTrack == len(self.tracks) - 1:
             return True
@@ -57,6 +57,10 @@ class Route:
         if start == self.tracks[self.curTrack].tost:
             self.tracks[self.curTrack].swap()
 
+    def setOneWayTrack(self, st):
+        if self.tracks[self.curTrack].trackCnt == 1:
+            self.tracks[self.curTrack].direction = st
+
     def linkTracks(self, start, stop):
         startInd = stopInd = -1
         for i, track in enumerate(self.tracks):
@@ -69,6 +73,13 @@ class Route:
         for i in range(startInd, stopInd):
             if self.tracks[i].tost != self.tracks[i+1].fromst:
                 self.tracks[i+1].swap()
+
+    def checkTrack(self, dir, ind):
+        if self.tracks[ind].trackCnt >= 2:
+            return True
+        if self.tracks[ind].direction is None or self.tracks[ind].direction == dir:
+            return True
+        return False
 
 class DateRoute:
      def __init__(self, date, route) -> None:

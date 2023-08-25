@@ -54,8 +54,10 @@ class World:
         self.trains.pop(exitTrainInd) 
 
         for tr in self.trains:
-            curTrack = tr.routes[tr.curRoute].route.curTrack
             tr.routes[tr.curRoute].route.setRoute(tr.lastStation)
+            tr.routes[tr.curRoute].route.setOneWayTrack(tr.lastStation)
+            curTrack = tr.routes[tr.curRoute].route.curTrack
+            self.updateOneWayStatus([{'status': tr.lastStation, 'routeId': tr.curRoute, 'trackId': curTrack}])
             if tr.position == 0:
                 for st in self.stations:
                     if st.name == tr.routes[tr.curRoute].route.tracks[curTrack].fromst:
@@ -63,7 +65,7 @@ class World:
                         break
 
     def worldStep(self):
-        #print(self.curtime)
+        # print(self.curtime)
         for tr in self.trains:
             if (tr.position >= tr.routes[tr.curRoute].route.tracks[-1].length and 
                 tr.routes[tr.curRoute].route.isLastTrack()):
@@ -78,6 +80,10 @@ class World:
                             break
                     if ind is not None:
                         self.stations[ind].addTrain(tr)
+                        curTrack = tr.routes[tr.curRoute].route.tracks[tr.routes[tr.curRoute].route.curTrack]
+                        if curTrack.trackCnt == 1:
+                            curTrack.direction = None
+                            self.updateOneWayStatus([{'status': None, 'routeId': tr.curRoute, 'trackId': tr.routes[tr.curRoute].route.curTrack}])
                         tr.routes[tr.curRoute].route.curTrack = 0
                         tr.routes[tr.curRoute].route.tracks.reverse()
                         for track in tr.routes[tr.curRoute].route.tracks:
@@ -110,4 +116,12 @@ class World:
                   flag = 0
                   break
             if flag:
-                tr.move()
+                status = tr.move()
+                if len(status) > 0:
+                    self.updateOneWayStatus(status)
+
+    def updateOneWayStatus(self, data):
+        for elem in data:
+            for tr in self.trains:
+                if tr.routes[tr.curRoute].route.id == elem['routeId']:
+                    tr.routes[tr.curRoute].route.tracks[elem['trackId']].direction = elem['status']
